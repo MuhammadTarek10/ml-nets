@@ -2,6 +2,7 @@ from typing import Tuple, List
 import os
 from pathlib import Path
 from PIL import Image
+import torch
 from torchvision.transforms import (
     Compose,
     Resize,
@@ -25,7 +26,7 @@ class CatsDogsDataset(Dataset):
         self.transform = transform
         self.classes, self.classes_to_idx = self.__find_classes()
 
-    def __getitem__(self, index) -> Tuple[Image.Image, int]:
+    def __getitem__(self, index) -> Tuple[torch.Tensor, int]:
         image = self.__load_image(index)
         class_name = self.__get_class(index)
         class_idx = self.classes_to_idx[class_name]
@@ -54,7 +55,7 @@ class CatsDogsDataset(Dataset):
 
 train_transform = Compose(
     [
-        Resize((224, 224)),
+        Resize((227, 227)),
         RandomRotation(20),
         TrivialAugmentWide(),
         ToTensor(),
@@ -64,7 +65,7 @@ train_transform = Compose(
 
 test_transform = Compose(
     [
-        Resize((224, 224)),
+        Resize((227, 227)),
         ToTensor(),
         Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ]
