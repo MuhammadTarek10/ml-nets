@@ -71,13 +71,13 @@ test_transform = Compose(
     ]
 )
 
-train_cats_dogs = CatsDogsDataset(root_dir="data/train", transform=train_transform)
-test_cats_dogs = CatsDogsDataset(root_dir="data/test", transform=test_transform)
-
-
-train_loader = DataLoader(dataset=train_cats_dogs, batch_size=32, num_workers=2, shuffle=True)
-test_loader = DataLoader(dataset=test_cats_dogs, batch_size=32, num_workers=2, shuffle=False)
-
-
 if __name__ == "__main__":
+    train_cats_dogs = CatsDogsDataset(root_dir="data/train", transform=train_transform)
+    test_cats_dogs = CatsDogsDataset(root_dir="data/test", transform=test_transform)
+    train_loader = DataLoader(
+        dataset=train_cats_dogs, batch_size=32, num_workers=2, shuffle=True
+    )
+    test_loader = DataLoader(
+        dataset=test_cats_dogs, batch_size=32, num_workers=2, shuffle=False
+    )
     print(next(iter(train_loader)))
