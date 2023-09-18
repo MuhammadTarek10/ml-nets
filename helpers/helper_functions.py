@@ -60,6 +60,7 @@ def train(
     device: str = "cpu",
 ) -> Tuple[List[int], List[float], List[float]]:
     epochs_count, train_losses, test_losses = [], [], []
+    model.to(device)
     for epoch in tqdm(range(num_epochs)):
         epochs_count.append(epoch)
         train_loss = train_step(model, train_loader, optimizer, criterion, device)

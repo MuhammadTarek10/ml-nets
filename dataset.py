@@ -53,25 +53,25 @@ class CatsDogsDataset(Dataset):
         return self.path[index].parent.name
 
 
-train_transform = Compose(
-    [
-        Resize((227, 227)),
-        RandomRotation(20),
-        TrivialAugmentWide(),
-        ToTensor(),
-        Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-    ]
-)
-
-test_transform = Compose(
-    [
-        Resize((224, 224)),
-        ToTensor(),
-        Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-    ]
-)
-
 if __name__ == "__main__":
+    train_transform = Compose(
+        [
+            Resize((227, 227)),
+            RandomRotation(20),
+            TrivialAugmentWide(),
+            ToTensor(),
+            Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+    
+    test_transform = Compose(
+        [
+            Resize((224, 224)),
+            ToTensor(),
+            Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+
     train_cats_dogs = CatsDogsDataset(root_dir="data/train", transform=train_transform)
     test_cats_dogs = CatsDogsDataset(root_dir="data/test", transform=test_transform)
     train_loader = DataLoader(
