@@ -1,9 +1,6 @@
 import torch
 from torch import nn
 
-from ..dataset import test_cats_dogs
-from ..helpers.helper_functions import predict
-
 
 class VGGNet(nn.Module):
     def __init__(self, *args, **kwargs) -> None:
@@ -132,6 +129,9 @@ class VGGNet(nn.Module):
 
 
 if __name__ == "__main__":
+    from ..dataset import test_cats_dogs
+    from ..helpers.helper_functions import predict
+
     image, labels = next(iter(test_cats_dogs))
     model = VGGNet()
     print(f"Image Shape: {image.shape}")

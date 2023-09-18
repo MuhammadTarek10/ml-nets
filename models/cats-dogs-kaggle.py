@@ -1,8 +1,6 @@
 import torch
 from torch import nn
 
-from ..dataset import test_loader
-
 
 class CatsDogsModel(nn.Module):
     def __init__(self):
@@ -47,6 +45,8 @@ class CatsDogsModel(nn.Module):
 
 
 if __name__ == "__main__":
+    from ..dataset import test_loader
+
     model = CatsDogsModel()
 
     images, labels = next(iter(test_loader))

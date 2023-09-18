@@ -1,9 +1,6 @@
 import torch
 from torch import nn
 
-from ..dataset import test_cats_dogs
-from ..helpers.helper_functions import predict
-
 
 class AlexNet(nn.Module):
     def __init__(self):
@@ -40,6 +37,9 @@ class AlexNet(nn.Module):
 
 
 if __name__ == "__main__":
+    from ..dataset import test_cats_dogs
+    from ..helpers.helper_functions import predict
+
     image, labels = next(iter(test_cats_dogs))
     model = AlexNet()
     print(f"Image Shape: {image.shape}")
