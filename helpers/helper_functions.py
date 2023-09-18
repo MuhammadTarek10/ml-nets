@@ -86,6 +86,17 @@ def predict(
         # return predicted.item()
 
 
+def test_model(
+    model: nn.Module,
+    loader: DataLoader,
+    device: str = "cpu",
+):
+    model.to(device)
+    images, labels = next(iter(loader))
+    with torch.inference_mode():
+        return model(images.to(device))
+
+
 def display_random(dataset, classes, model=None, n=10, device="cpu"):
     if model:
         model.to(device)
