@@ -1,9 +1,12 @@
 from typing import Tuple, List
+import random
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.optim import Optimizer
+from torchmetrics import Accuracy
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 
 def train_step(
@@ -80,3 +83,66 @@ def predict(
         return output
         # _, predicted = torch.max(output.data, 1)
         # return predicted.item()
+
+
+def display_random(dataset, classes, model=None, n=10, device="cpu"):
+    if model:
+        model.to(device)
+    fig, ax = plt.subplots(n // 5, n // 2, figsize=(15, 8))
+    idx = random.sample(range(len(dataset)), k=n)
+    counter = 0
+    for i in range(n // 5):
+        for j in range(n // 2):
+            image, label = dataset[idx[counter]]
+            image = image.to(device)
+            if model:
+                preds = predict(model, image.unsqueeze(dim=0))
+            image = image.permute(1, 2, 0)
+            ax[i, j].imshow(image)
+            if model:
+                color = "green" if preds == label else "red"
+                ax[i, j].set_title(
+                    f"Actual: {classes[label]} | Predicted: {classes[preds]}",
+                    fontsize=8,
+                    color=color,
+                )
+            else:
+                ax[i, j].set_title(f"Actual: {classes[label]}", fontsize=22)
+            counter += 1
+
+
+def plot_stats(
+    epochs: list,
+    train_loss: list,
+    test_loss: list,
+):
+    plt.figure(figsize=(10, 5))
+    plt.plot(epochs, train_loss, label="Train loss")
+    plt.plot(epochs, test_loss, label="Test loss")
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.show()
+
+
+def plot_accs(
+    epochs: list,
+    accs: list,
+):
+    plt.figure(figsize=(10, 5))
+    plt.plot(epochs, [i.cpu() for i in accs], label="Accuracy")
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.show()
+
+
+def accuracy(model, data_loader, device="cpu"):
+    acc = Accuracy(task="binary", num_classes=2)
+    model.to(device)
+    model.eval()
+    for X, y in data_loader:
+        X, y = X.to(device), y.to(device)
+        output = model(X)
+        acc.update(output, y)
+    return acc.compute()
