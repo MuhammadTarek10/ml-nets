@@ -22,7 +22,7 @@ def train_step(
         images, labels = images.to(device), labels.to(device)
         optimizer.zero_grad()
         output = model(images)
-        loss = criterion(output, labels)
+        loss = criterion(output, labels.float())
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
@@ -39,15 +39,18 @@ def test_step(
 ) -> float:
     model.eval()
     running_loss = 0
+    acc = Accuracy(task="binary", num_classes=2)
+    acc.to(device)
     with torch.inference_mode():
         for images, labels in test_loader:
             images, labels = images.to(device), labels.to(device)
             output = model(images)
-            loss = criterion(output, labels)
+            loss = criterion(output, labels.float())
+            acc.update(output, labels)
             running_loss += loss.item()
 
     test_loss = running_loss / len(test_loader)
-    return test_loss
+    return test_loss, acc.compute()
 
 
 def train(
@@ -59,18 +62,19 @@ def train(
     num_epochs: int = 10,
     device: str = "cpu",
 ) -> Tuple[List[int], List[float], List[float]]:
-    epochs_count, train_losses, test_losses = [], [], []
+    epochs_count, train_losses, test_losses, accs = [], [], [], []
     model.to(device)
     for epoch in tqdm(range(num_epochs)):
         epochs_count.append(epoch)
         train_loss = train_step(model, train_loader, optimizer, criterion, device)
-        test_loss = test_step(model, test_loader, criterion, device)
+        test_loss, acc = test_step(model, test_loader, criterion, device)
         train_losses.append(train_loss)
         test_losses.append(test_loss)
+        accs.append(acc)
         tqdm.write(
-            f"Epoch {epoch + 1}: train loss {train_loss:0.3f} test loss {test_loss:0.3f}"
+            f" Epoch {epoch + 1} | Train Loss {train_loss:0.3f} | Test Loss {test_loss:0.3f} | Accuracy: {acc:0.3f}"
         )
-    return epochs_count, train_losses, test_losses
+    return epochs_count, train_losses, test_losses, accs
 
 
 def predict(
